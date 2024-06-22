@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 
 class BookController extends Controller
 {
@@ -14,7 +16,9 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        return view('book.index', [
+            'books' => Book::orderBy('id', 'desc')->get()
+        ]);
     }
 
     /**
@@ -24,7 +28,7 @@ class BookController extends Controller
      */
     public function create()
     {
-        //
+        return view('book.create');
     }
 
     /**
@@ -35,7 +39,24 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'isbn' => 'required|numeric|unique:books',
+            'author' => 'required|max:255',
+            'publisher' => 'required|max:255',
+            'issued' => 'required|date',
+            'location' => 'max:255',
+            'description' => 'max:255',
+            'stock' => 'required|numeric',
+            'image' => 'image|file|max:1024'
+        ]);
+
+        if ($request->file('image')) {
+            $validatedData['image'] = $request->file('image')->store('book-images');
+        }
+
+        Book::create($validatedData);
+        return redirect('book')->with('success', 'Data Saved Successfully');
     }
 
     /**
@@ -46,7 +67,9 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        //
+        return view('book.show', [
+            'book' => $book
+        ]);
     }
 
     /**
@@ -57,7 +80,9 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        //
+        return view('book.edit', [
+            'book' => $book
+        ]);
     }
 
     /**
@@ -69,7 +94,32 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        //
+        $rules = [
+            'title' => 'required|max:255',
+            'author' => 'required|max:255',
+            'publisher' => 'required|max:255',
+            'issued' => 'required|date',
+            'location' => 'max:255',
+            'description' => 'max:255',
+            'stock' => 'required|numeric',
+            'image' => 'image|file|max:1024'
+        ];
+
+        if ($book->isbn != $request->isbn) {
+            $rules['isbn'] = 'required|numeric|unique:books';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        if ($request->file('image')) {
+            if ($book->image != "") {
+                Storage::delete($book->image);
+            }
+            $validatedData['image'] = $request->file('image')->store('book-images');
+        }
+
+        $book->update($validatedData);
+        return redirect('book')->with('success', 'Data Updated Successfully');
     }
 
     /**
@@ -80,6 +130,16 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        //
+        try{
+            if ($book->image != "") {
+                $image = $book->image;
+            }
+
+            $book->delete();
+            Storage::delete($image);
+            return redirect('book')->with('success', 'Data Deleted Successfully');
+        } catch (QueryException $e) {
+            return redirect('book')->with('fail', 'Data cannot be deleted because there is related transaction data');
+        }
     }
 }

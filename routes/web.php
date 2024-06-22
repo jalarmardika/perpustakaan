@@ -1,6 +1,10 @@
 <?php
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TransactionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,3 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::resource('book', BookController::class);
+Route::resource('member', MemberController::class)->except('show');
+Route::resource('user', UserController::class)->except('show');

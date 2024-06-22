@@ -2,83 +2,70 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Database\QueryException;
 
 class MemberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        return view('member.index', [
+            'members' => Member::orderBy('id', 'desc')->get()
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        return view('member.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => ['required','max:255'],
+            'nim' => ['required','numeric','unique:members'],
+            'gender' => ['required', Rule::in(['Male', 'Female'])],
+            'study_program' => ['required','max:255'],
+            'no_hp' => ['required','max:13']
+        ]);
+
+        Member::create($validatedData);
+        return redirect('member')->with('success', 'Data Saved Successfully');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function edit(Member $member)
     {
-        //
+        return view('member.edit', ['member' => $member]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function update(Request $request, Member $member)
     {
-        //
+        $rules = [
+            'name' => ['required','max:255'],
+            'gender' => ['required', Rule::in(['Male', 'Female'])],
+            'study_program' => ['required','max:255'],
+            'no_hp' => ['required','max:13']
+        ];
+
+        if ($member->nim != $request->nim) {
+            $rules['nim'] = 'required|numeric|unique:members';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        $member->update($validatedData);
+        return redirect('member')->with('success', 'Data Updated Successfully');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function destroy(Member $member)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        try{
+            $member->delete();
+            return redirect('member')->with('success', 'Data Deleted Successfully');
+        } catch (QueryException $e) {
+            return redirect('member')->with('fail', 'Data cannot be deleted because there is related transaction data');
+        }
     }
 }

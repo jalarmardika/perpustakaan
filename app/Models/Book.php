@@ -9,7 +9,7 @@ class Book extends Model
 {
     use HasFactory;
 
-    public $guraded = ['id'];
+    public $guarded = ['id'];
 
     public function transactions()
     {
