@@ -1,10 +1,12 @@
 <?php
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,9 +18,22 @@ use App\Http\Controllers\TransactionController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [AuthController::class, 'index'])->middleware('guest')->name('login');
+Route::post('login', [AuthController::class, 'login']);
+
+Route::middleware('admin')->group(function() {
+	Route::resource('book', BookController::class);
+	Route::resource('member', MemberController::class)->except('show');
+	Route::resource('user', UserController::class)->except('show');
+});	
+
+Route::middleware('auth')->group(function() {
+	Route::get('dashboard', function() {
+		return view('dashboard');
+	});
+	Route::resource('transaction', TransactionController::class);
+	Route::get('report', [ReportController::class, 'index']);
+	Route::post('report', [ReportController::class, 'filter']);
+	Route::put('editProfile/{user}', [UserController::class, 'editProfile']);
+	Route::get('logout', [AuthController::class, 'logout']);
 });
-Route::resource('book', BookController::class);
-Route::resource('member', MemberController::class)->except('show');
-Route::resource('user', UserController::class)->except('show');

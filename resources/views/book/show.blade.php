@@ -11,7 +11,11 @@
 			<div class="card-body">
 				<div class="row">
 				  <div class="col-md-4">
-				    <img src="{{ url('storage/' . $book->image) }}" class="img-fluid mb-3">
+				  	@if($book->image)	
+				  	  <img src="{{ url('storage/' . $book->image) }}" class="img-fluid mb-3">
+				  	@else
+				  		<center><h4 class="mb-3">No Image</h4></center>  
+				  	@endif
 				  </div>
 				  <div class="col-md-8">
 				    <ul class="list-group">

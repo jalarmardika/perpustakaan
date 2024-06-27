@@ -14,6 +14,7 @@
         </a>
     </li>
     <hr class="sidebar-divider">
+    @can('admin')
     <div class="sidebar-heading">
         Data Master
     </div>
@@ -36,6 +37,7 @@
         </a>
     </li>
     <hr class="sidebar-divider">
+    @endcan
     <div class="sidebar-heading">
         Transactions
     </div>
@@ -46,28 +48,13 @@
         </a>
     </li>
     <hr class="sidebar-divider">
-    @can('admin')
     <div class="sidebar-heading">
-        Reports
+        Report
     </div>
     <li class="nav-item">
         <a class="nav-link" href="{{ url('report') }}">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Report Sales</span>
-        </a>
-    </li>
-    <hr class="sidebar-divider">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url('user') }}">
-            <i class="fas fa-users"></i>
-            <span>Users</span>
-        </a>
-    </li>
-    @endcan
-    <li class="nav-item">
-        <a class="nav-link" onclick="return confirm('Are you sure ?')" href="{{ url('logout') }}">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
+            <i class="fas fa-fw fa-file"></i>
+            <span>Report</span>
         </a>
     </li>
 </ul>

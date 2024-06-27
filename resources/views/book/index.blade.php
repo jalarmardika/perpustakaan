@@ -33,7 +33,7 @@
 			<div class="collapse show" id="collapseCardExample">
 				<div class="card-body">
 					<a href="{{ url('book/create') }}" class="btn btn-outline-primary btn-sm mb-3">Add Book</a>
-					<table id="dataTable" class="table table-bordered table-hover table-striped">
+					<table id="dataTable" class="table table-bordered table-hover table-striped table-responsive">
 						<thead>
 							<tr>
 								<th width="1%">No</th>

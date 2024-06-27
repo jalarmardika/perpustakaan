@@ -84,4 +84,28 @@ class UserController extends Controller
     		return redirect('user')->with('fail', 'Data cannot be deleted because there is related transaction data');
     	}
     }
+
+    public function editProfile(Request $request, User $user)
+    {
+        $rules = [
+            'name' => 'required|max:255'
+        ];
+
+        if ($request->email != $user->email) {
+            $rules['email'] = 'required|email|unique:users|max:255';
+        }
+
+        if ($request->password) {
+            $rules['password'] = 'max:255|min:5';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        }
+
+        $user->update($validatedData);
+        return back()->with('success', 'Profile Updated Successfully');
+    }
 }
