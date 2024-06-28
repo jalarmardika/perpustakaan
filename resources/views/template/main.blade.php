@@ -6,6 +6,12 @@
 	<link href="{{ url('startbootstrap-sb-admin-2-gh-pages/css/sb-admin-2.min.css') }}" rel="stylesheet">
 	<link href="{{ url('startbootstrap-sb-admin-2-gh-pages/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
 	<style type="text/css">
+		.card-body-icon{
+		    position: absolute;
+		    z-index: 0;
+		    right: 4px;
+		    opacity: 0.7;
+		}
 		.print{
 			display: none;
 		}
@@ -48,7 +54,7 @@
 	                        <!-- Dropdown - User Information -->
 	                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
 	                            aria-labelledby="userDropdown">
-	                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalProfile">
+	                            <a class="dropdown-item" href="{{ url('profile') }}">
 	                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
 	                                Edit Profile
 	                            </a>
@@ -70,39 +76,6 @@
 		        </a>
 		    </div>
 	    </div>
-	</div>
-
-	<!-- modal profile -->
-	<div class="modal" tabindex="-1" id="modalProfile">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Edit Profile</h5>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-				<div class="modal-body">
-					<form action="{{ url('editProfile/' . auth()->user()->id) }}" method="post">
-						@csrf
-						@method('put')
-						<div class="form-group">
-							<label>Name</label>
-							<input type="text" name="name" class="form-control" value="{{ old('name', auth()->user()->name) }}">
-						</div>
-						<div class="form-group">
-							<label>Email</label>
-							<input type="email" name="email" class="form-control" autocomplete="off" value="{{ old('email', auth()->user()->email) }}">
-						</div>
-						<div class="form-group">
-							<label>Password</label>
-							<input type="password" name="password" class="form-control" placeholder="Fill in if you want to change the password">
-						</div>
-						<div class="d-flex justify-content-end">
-							<button type="submit" name="submit" class="btn btn-primary btn-sm">Update</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
 	</div>
 
 	<!-- Bootstrap core JavaScript-->

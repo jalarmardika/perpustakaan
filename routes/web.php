@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Http\Request;
+use App\Models\{Book, Member, User, Transaction};
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
@@ -21,19 +22,24 @@ use App\Http\Controllers\ReportController;
 Route::get('/', [AuthController::class, 'index'])->middleware('guest')->name('login');
 Route::post('login', [AuthController::class, 'login']);
 
-Route::middleware('admin')->group(function() {
-	Route::resource('book', BookController::class);
-	Route::resource('member', MemberController::class)->except('show');
-	Route::resource('user', UserController::class)->except('show');
-});	
-
 Route::middleware('auth')->group(function() {
 	Route::get('dashboard', function() {
-		return view('dashboard');
+		return view('dashboard', [
+			'totalBooks' => Book::get()->count(),
+			'totalMembers' => Member::get()->count(),
+			'totalUsers' => User::get()->count(),
+			'borrowedBook' => Transaction::where('status', 'borrowed')->get()->count(),
+		]);
 	});
+
+	Route::resource('book', BookController::class)->middleware('admin');
+	Route::resource('member', MemberController::class)->except('show')->middleware('admin');
+	Route::resource('user', UserController::class)->except('show')->middleware('admin');
+
 	Route::resource('transaction', TransactionController::class);
 	Route::get('report', [ReportController::class, 'index']);
 	Route::post('report', [ReportController::class, 'filter']);
-	Route::put('editProfile/{user}', [UserController::class, 'editProfile']);
+	Route::get('profile', [UserController::class, 'profile']);
+	Route::put('profile/{user}', [UserController::class, 'editProfile']);
 	Route::get('logout', [AuthController::class, 'logout']);
 });

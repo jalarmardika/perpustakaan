@@ -85,6 +85,11 @@ class UserController extends Controller
     	}
     }
 
+    public function profile()
+    {
+        return view('profile');
+    }
+
     public function editProfile(Request $request, User $user)
     {
         $rules = [
@@ -106,6 +111,6 @@ class UserController extends Controller
         }
 
         $user->update($validatedData);
-        return back()->with('success', 'Profile Updated Successfully');
+        return redirect('profile')->with('success', 'Profile Updated Successfully');
     }
 }

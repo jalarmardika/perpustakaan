@@ -65,7 +65,7 @@
 		      		<div class="d-flex justify-content-end mb-3">
 			    		<button type="button" name="pdf" class="btn btn-danger btn-sm no-print"><i class="fa fa-file-pdf"></i> Print</button>
 		    		</div>
-			        <table class="table table-bordered table-hover table-striped">
+			        <table class="table table-bordered table-hover table-striped table-responsive">
 			        	<thead>
 			        		<tr>
 			        			<th width="1%">No</th>

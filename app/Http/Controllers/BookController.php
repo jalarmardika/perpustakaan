@@ -136,7 +136,11 @@ class BookController extends Controller
             }
 
             $book->delete();
-            Storage::delete($image);
+
+            if (isset($image) && $image != "") {
+                Storage::delete($image);
+            }
+
             return redirect('book')->with('success', 'Data Deleted Successfully');
         } catch (QueryException $e) {
             return redirect('book')->with('fail', 'Data cannot be deleted because there is related transaction data');
