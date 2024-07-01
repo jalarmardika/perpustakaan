@@ -31,6 +31,12 @@ class TransactionController extends Controller
             'return_date' => 'required|date'
         ]);
 
+        // cek stock buku
+        $book = Book::find($validatedData['book_id']);
+        if ($book->stock < 1) {
+            return redirect('transaction/create')->with('fail', 'Failed, this book is out of stock');
+        }
+
         // member tidak boleh meminjam buku baru, jika sedang meminjam buku yg lain dan belum dikembalikan  
         if (Transaction::where('member_id', $validatedData['member_id'])->where('status', 'borrowed')->count()) {
             return redirect('transaction/create')->with('fail', 'Failed, this member is borrowing a book');
@@ -43,7 +49,6 @@ class TransactionController extends Controller
 
         Transaction::create($validatedData);
 
-        $book = Book::find($validatedData['book_id']);
         $updateStock = $book->stock - 1;
         $book->update(['stock' => $updateStock]);
         return redirect('transaction')->with('success', 'Transaction Successfully');
@@ -74,12 +79,17 @@ class TransactionController extends Controller
             'return_date' => 'required|date'
         ]);
 
+        // cek stock buku
+        $book = Book::find($validatedData['book_id']);
+        if ($book->stock < 1) {
+            return redirect('transaction/'. $transaction->id .'/edit')->with('fail', 'Failed, this book is out of stock');
+        }
+
         if (Transaction::where('member_id', $validatedData['member_id'])->where('status', 'borrowed')->count() && $transaction->member_id != $validatedData['member_id']) {
             return redirect('transaction/'. $transaction->id .'/edit')->with('fail', 'Failed, this member is borrowing a book');
         }
 
         if (isset($request->status) && $request->status == "returned") {
-            $book = Book::find($validatedData['book_id']);
             $updateStock = $book->stock + 1;
             $book->update(['stock' => $updateStock]);
 
